@@ -80,6 +80,11 @@ let map = [
 ];
 
 const player = { x: 1, y: 2, dx: 0, dy: 0 };
+  const ghosts = [
+  { x: 10, y: 10, dx: 1, dy: 0, color: "red" },
+  { x: 11, y: 10, dx: 0, dy: 1, color: "pink" }
+];
+
 
 function drawMap() {
   for (let y = 0; y < rows; y++) {
@@ -103,7 +108,8 @@ function drawMap() {
   }
 }
 
-function drawPlayer() {
+function drawPlayer() 
+{
   ctx.fillStyle = "yellow";
   ctx.beginPath();
   ctx.arc(
@@ -114,6 +120,21 @@ function drawPlayer() {
   );
   ctx.fill();
 }
+  function drawGhosts() {
+  ghosts.forEach(g => {
+    ctx.fillStyle = g.color;
+    ctx.beginPath();
+    ctx.arc(
+      g.x * tileSize + tileSize / 2,
+      g.y * tileSize + tileSize / 2,
+      tileSize / 2 - 2,
+      0,
+      Math.PI * 2
+    );
+    ctx.fill();
+  });
+}
+
 
 function movePlayer() {
   // Don't score or move until a direction is pressed
@@ -135,14 +156,55 @@ function movePlayer() {
   }
 }
 
+function moveGhosts() {
+  ghosts.forEach(g => {
+    const nx = g.x + g.dx;
+    const ny = g.y + g.dy;
+
+    if (map[ny][nx] === "#") {
+      const dirs = [
+        { dx: 1, dy: 0 },
+        { dx: -1, dy: 0 },
+        { dx: 0, dy: 1 },
+        { dx: 0, dy: -1 }
+      ];
+      const d = dirs[Math.floor(Math.random() * dirs.length)];
+      g.dx = d.dx;
+      g.dy = d.dy;
+    } else {
+      g.x = nx;
+      g.y = ny;
+    }
+
+    // Collision with player
+    if (g.x === player.x && g.y === player.y) {
+      resetGame();
+    }
+  });
+}
+function resetGame() {
+  player.x = 1;
+  player.y = 2;
+  player.dx = 0;
+  player.dy = 0;
+
+  ghosts[0].x = 10;
+  ghosts[0].y = 10;
+  ghosts[1].x = 11;
+  ghosts[1].y = 10;
+
+  score = 0;
+  document.getElementById("score").innerText = "Score: 0";
+}
 
 function loop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   drawMap();
   movePlayer();
+  moveGhosts();
   drawPlayer();
+  drawGhosts();
 }
-
 document.addEventListener("keydown", e => {
   if (e.key === "ArrowUp")    { player.dx = 0; player.dy = -1; }
   if (e.key === "ArrowDown")  { player.dx = 0; player.dy = 1; }
@@ -157,5 +219,6 @@ setInterval(loop, 180);
 </script>
 </body>
 </html>
+
 
 
