@@ -116,6 +116,9 @@ function drawPlayer() {
 }
 
 function movePlayer() {
+  // Don't score or move until a direction is pressed
+  if (player.dx === 0 && player.dy === 0) return;
+
   const nx = player.x + player.dx;
   const ny = player.y + player.dy;
 
@@ -126,10 +129,12 @@ function movePlayer() {
     if (map[ny][nx] === ".") {
       score += 10;
       document.getElementById("score").innerText = "Score: " + score;
-      map[ny] = map[ny].substring(0, nx) + " " + map[ny].substring(nx + 1);
+      map[ny] =
+        map[ny].substring(0, nx) + " " + map[ny].substring(nx + 1);
     }
   }
 }
+
 
 function loop() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -152,4 +157,5 @@ setInterval(loop, 180);
 </script>
 </body>
 </html>
+
 
